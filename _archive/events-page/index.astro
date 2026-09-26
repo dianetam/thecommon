@@ -1,0 +1,128 @@
+---
+import Base from '../../layouts/Base.astro';
+import EventCard from '../../components/EventCard.astro';
+import { getCollection } from 'astro:content';
+
+const NEWSLETTER = 'http://eepurl.com/cUCVlj';
+const all = await getCollection('events');
+const now = new Date();
+
+const upcoming = all
+  .filter((e) => (e.data.end ?? e.data.date) >= now)
+  .sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
+const past = all
+  .filter((e) => (e.data.end ?? e.data.date) < now)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 4);
+
+// group upcoming by "Month YYYY"
+const groups = new Map();
+for (const e of upcoming) {
+  const key = e.data.date.toLocaleDateString('en-CA', { month: 'long', year: 'numeric' });
+  if (!groups.has(key)) groups.set(key, []);
+  groups.get(key).push(e);
+}
+const grouped = [...groups.entries()];
+
+const filters = [
+  { key: 'all', label: 'Everything' },
+  { key: 'social', label: 'Socials' },
+  { key: 'community', label: 'Community' },
+  { key: 'innovation', label: 'Innovation Nights' },
+];
+---
+<Base current="events" title="What’s On — The Common Squamish" description="Socials, founder dinners, and Innovation Nights at The Common. There's always something happening in downtown Squamish.">
+
+  <!-- HEADER -->
+  <header class="page-hd">
+    <div class="mesh" aria-hidden="true"></div>
+    <div class="wrap">
+      <span class="eyebrow on-dark">What’s on at The Common</span>
+      <h1>There’s always <em class="shimmer">something happening</em>.</h1>
+      <p>Weekly socials, founder dinners, and Innovation Nights. Drop in, meet your people.</p>
+    </div>
+  </header>
+
+  <!-- FILTERS + FEED -->
+  <section class="section light">
+    <div class="wrap">
+      <div class="filters" role="tablist" aria-label="Filter events">
+        {filters.map((f, i) => (
+          <button class={`chip${i === 0 ? ' active' : ''}`} data-filter={f.key}>{f.label}</button>
+        ))}
+      </div>
+
+      {upcoming.length === 0 && (
+        <p class="empty">Nothing on the calendar this second — but we run socials every week. <a href={NEWSLETTER} target="_blank" rel="noopener noreferrer">Join the newsletter</a> to catch the next one.</p>
+      )}
+
+      {grouped.map(([month, items]) => (
+        <div class="month-group">
+          <h2 class="month-label">{month}</h2>
+          <div class="feed">
+            {items.map((e) => <EventCard event={e} />)}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="section dark">
+    <div class="mesh" aria-hidden="true"></div>
+    <div class="wrap" style="position:relative;z-index:2;max-width:680px;text-align:center;">
+      <span class="eyebrow on-dark" style="justify-content:center;">Never miss what’s on</span>
+      <h2 style="font-size:clamp(2rem,4.5vw,3rem);color:#fff;margin:1.1rem 0;">Get <em class="shimmer">The Common</em> in your inbox.</h2>
+      <p style="color:rgba(255,255,255,0.74);font-weight:300;font-size:1.08rem;margin:0 auto 2rem;max-width:480px;">A short note each week: what’s coming up, who’s building what, and the occasional good idea. No spam, ever.</p>
+      <a href={NEWSLETTER} class="btn btn-gold" target="_blank" rel="noopener noreferrer">Join the newsletter</a>
+    </div>
+  </section>
+
+  <!-- PAST / RECAPS -->
+  {past.length > 0 && (
+    <section class="section warm">
+      <div class="wrap">
+        <div class="section-head"><span class="eyebrow">Recently at The Common</span><h2>A look back.</h2></div>
+        <div class="feed">{past.map((e) => <EventCard event={e} />)}</div>
+      </div>
+    </section>
+  )}
+
+</Base>
+
+<style>
+  .page-hd { position: relative; background: var(--ink-deep); color: #fff; overflow: hidden; padding: 150px 0 80px; }
+  .page-hd .wrap { position: relative; z-index: 2; max-width: 760px; }
+  .page-hd h1 { font-size: clamp(2.6rem, 6vw, 4.4rem); line-height: 1.05; margin: 1.3rem 0 1.2rem; color: #fff; }
+  .page-hd h1 em { font-style: italic; font-weight: 400; }
+  .page-hd p { font-size: clamp(1.05rem, 2vw, 1.2rem); color: rgba(255,255,255,0.78); font-weight: 300; max-width: 520px; }
+
+  .filters { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 2.6rem; }
+  .chip { font-family: var(--sans); font-size: 0.8rem; font-weight: 500; letter-spacing: 0.06em; color: var(--stone); background: var(--white); border: 1px solid var(--line); border-radius: 100px; padding: 0.6rem 1.2rem; cursor: pointer; transition: all 0.3s var(--ease); }
+  .chip:hover { border-color: var(--stone); }
+  .chip.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+  .month-group { margin-bottom: 2.8rem; }
+  .month-label { font-family: var(--serif); font-style: italic; font-size: 1.4rem; color: var(--stone); margin-bottom: 1.2rem; }
+  .feed { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 1.2rem; }
+  @media (max-width: 460px) { .feed { grid-template-columns: 1fr; } }
+  .empty { font-size: 1.1rem; color: var(--stone); }
+  .empty a { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
+</style>
+
+<script is:inline>
+  document.querySelectorAll('.chip').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const f = chip.dataset.filter;
+      document.querySelectorAll('.chip').forEach((c) => c.classList.toggle('active', c === chip));
+      document.querySelectorAll('.ecard').forEach((card) => {
+        card.style.display = (f === 'all' || card.dataset.type === f) ? '' : 'none';
+      });
+      // hide month groups that end up empty
+      document.querySelectorAll('.month-group').forEach((g) => {
+        const anyVisible = [...g.querySelectorAll('.ecard')].some((c) => c.style.display !== 'none');
+        g.style.display = anyVisible ? '' : 'none';
+      });
+    });
+  });
+</script>

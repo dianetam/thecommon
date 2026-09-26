@@ -1,0 +1,44 @@
+---
+const { event } = Astro.props;
+const d = event.data;
+const start = d.date;
+const month = start.toLocaleDateString('en-CA', { month: 'short' }).toUpperCase();
+const day = start.toLocaleDateString('en-CA', { day: 'numeric' });
+const weekday = start.toLocaleDateString('en-CA', { weekday: 'short' });
+const time = start.toLocaleTimeString('en-CA', { hour: 'numeric', minute: '2-digit' }).replace(':00', '');
+const typeLabel = { workshop: 'Workshop', social: 'Social', community: 'Community', innovation: 'Innovation Night', networking: 'Networking' }[d.type];
+const href = d.rsvp || '/events/';
+const external = !!d.rsvp;
+---
+<article class="ecard" data-type={d.type}>
+  <div class="ecard-date" aria-hidden="true">
+    <span class="m">{month}</span><span class="d">{day}</span><span class="w">{weekday}</span>
+  </div>
+  <div class="ecard-body">
+    <span class={`ecard-tag t-${d.type}`}>{typeLabel}</span>
+    <h3>{d.title}</h3>
+    <p class="ecard-meta">{time} · {d.location}{d.price ? ` · ${d.price}` : ''}</p>
+    <p class="ecard-sum">{d.summary}</p>
+    <a class="ecard-cta" href={href} {...external ? { target: '_blank', rel: 'noopener noreferrer' } : {}}>
+      {external ? 'Reserve your seat →' : 'Details →'}
+    </a>
+  </div>
+</article>
+
+<style>
+  .ecard { display: grid; grid-template-columns: 86px 1fr; gap: 1.4rem; background: var(--white); border: 1px solid var(--line); border-radius: 16px; padding: 1.5rem; transition: transform 0.4s var(--ease), border-color 0.4s var(--ease), box-shadow 0.4s var(--ease); }
+  .ecard:hover { transform: translateY(-4px); border-color: var(--gold); box-shadow: 0 18px 40px -26px rgba(28,25,23,0.45); }
+  .ecard-date { display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--ink-deep); color: #fff; border-radius: 12px; padding: 0.8rem 0.4rem; height: max-content; align-self: start; }
+  .ecard-date .m { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.14em; color: var(--gold-glow); }
+  .ecard-date .d { font-family: var(--serif); font-size: 2.1rem; line-height: 1; margin: 0.1rem 0; }
+  .ecard-date .w { font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.55); }
+  .ecard-tag { display: inline-block; font-size: 0.66rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; padding: 0.28rem 0.7rem; border-radius: 100px; margin-bottom: 0.7rem; background: var(--paper-warm); color: var(--accent); border: 1px solid var(--line); }
+  .t-innovation { background: #FCF3DE; color: #9A6B12; border-color: #F0DCA6; }
+  .t-workshop { background: #EEF1F5; color: #3A536B; border-color: #DCE3EC; }
+  .ecard h3 { font-family: var(--serif); font-size: 1.3rem; line-height: 1.2; margin-bottom: 0.4rem; }
+  .ecard-meta { font-size: 0.82rem; color: var(--stone-soft); margin-bottom: 0.7rem; }
+  .ecard-sum { font-size: 0.95rem; color: var(--stone); font-weight: 300; line-height: 1.55; margin-bottom: 1rem; }
+  .ecard-cta { font-size: 0.78rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+  .ecard:hover .ecard-cta { color: var(--gold); }
+  @media (max-width: 540px) { .ecard { grid-template-columns: 64px 1fr; gap: 1rem; padding: 1.2rem; } }
+</style>

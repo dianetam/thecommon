@@ -1,0 +1,280 @@
+---
+import Base from '../layouts/Base.astro';
+import WalletPhone from '../components/WalletPhone.astro';
+const OFFICERND = 'https://e-commerce.officernd.com/thecommon/search-results?type=hotdesk&listingType=plan';
+const PARTNER_MAIL = 'mailto:welcome@thecommon.io?subject=The%20Common%20Partnership%20Program';
+
+const steps = [
+  { n: '1', t: 'Tap to install', b: 'Your welcome email has an Add to Wallet button. One tap and the card lives on your phone, surfacing automatically when you arrive at The Common.' },
+  { n: '2', t: 'Scan to check in', b: 'The kiosk at the front door reads your QR code. Your visit is logged and your card stays current — plan and status always up to date.' },
+  { n: '3', t: 'Show to unlock perks', b: 'Open your wallet at any partner business. Show your active membership and they apply your perk. No printer, no paper card, no app to dig for.' },
+];
+
+const tiers = [
+  {
+    variant: 'vis', lbl: 'Day Pass', name: 'Visitor', badge: 'Silver',
+    plans: 'Single day or punch-card · pay per visit',
+    perks: ['Hot-desk for the day', 'Coffee, tea & snacks while you work', 'Fast wifi and a quiet place to focus', 'Meeting rooms at day rates'],
+    nudge: true,
+  },
+  {
+    variant: 'mem', lbl: 'Flexi membership', name: 'Member', badge: 'Black', feat: true,
+    plans: '6-Day · 10-Day · 15-Day Flexi · monthly',
+    perks: ['Everything in Visitor', 'Days remaining tracked live on your card', 'Meeting-room credits each month', 'Member rates on events & programming', 'Full partner perk program across Squamish'],
+  },
+  {
+    variant: 'res', lbl: '24/7 · Private office', name: 'Resident', badge: 'Gold',
+    plans: 'Full-Time · Dedicated Desk · Private Office · monthly',
+    perks: ['Everything in Member', '24/7 building access', 'Your own dedicated desk or private office', 'Included meeting-room hours every month', 'First access to every new partner perk'],
+  },
+];
+
+const perks = [
+  { n: 'Coffee & Food', d: 'Member rates at the cafes and kitchens where Squamish actually works and eats.', icon: 'coffee' },
+  { n: 'Outdoor & Recreation', d: 'Gear, rentals, and ride discounts for the climbers and bikers who call this corridor home.', icon: 'mountain' },
+  { n: 'Wellness', d: 'Studios and clinics offering intro classes and member rates to keep you moving.', icon: 'heart' },
+  { n: 'Professional Services', d: 'Consults and preferred rates from local accountants and lawyers who get founders.', icon: 'brief' },
+  { n: 'Sea-to-Sky Coworking', d: 'Reciprocal day access at partner spaces from Whistler to Vancouver. Our most requested perk.', icon: 'globe' },
+  { n: 'Family & Childcare', d: 'Priority access and member benefits with local childcare, for the parents in our community.', icon: 'family' },
+];
+
+const mechanics = [
+  { t: 'Effortless to join', b: 'Members open their wallet, you see an active membership, you apply the perk. No terminal, no app, no setup. It works from the very first day.' },
+  { t: 'We bring you customers', b: 'We actively champion our partners. Your perk lands on every member’s card, and at launch we push a notification, feature you in the newsletter, and talk you up across the community. Real foot traffic — not just a logo on a list.' },
+  { t: 'Part of something bigger', b: 'We’re building the community hub Squamish has been missing — where people work, connect, and grow, and where the best local businesses are part of the story. When members find a place they love, they come back, and they bring people with them.' },
+];
+
+const ICONS = {
+  coffee: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>',
+  mountain: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/><path d="M4.1 15.1c2.6-1.6 5.3-1.6 7.9 0 2.6 1.6 5.3 1.6 7.9 0"/></svg>',
+  heart: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
+  brief: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>',
+  globe: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><line x1="3" y1="12" x2="21" y2="12"/></svg>',
+  family: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><circle cx="17" cy="9" r="2"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M19 21v-1a2 2 0 0 0-2-2h-.5"/></svg>',
+};
+const perkIcon = (k) => ICONS[k] || '';
+---
+<Base current="member-card" title="The Common Card — one card for the whole community" description="Your Common membership lives in Apple Wallet and Google Wallet. Check in at the door and unlock perks from local businesses across Squamish.">
+
+  <!-- HERO -->
+  <header class="mc-hero">
+    <div class="mc-glow" aria-hidden="true"></div>
+    <div class="wrap mc-hero-g">
+      <div class="mc-hero-copy">
+        <span class="eyebrow reveal">The Common Card</span>
+        <h1 class="reveal">One card for the<br><em>whole</em> community.</h1>
+        <p class="reveal lede">Your membership lives in Apple&nbsp;Wallet and Google&nbsp;Wallet — no app to download. Check in at the door, and unlock perks from local businesses across Squamish as our network grows.</p>
+        <div class="mc-btns reveal">
+          <a href={OFFICERND} class="btn btn-gold" target="_blank" rel="noopener noreferrer">Become a member</a>
+          <a href="#partners" class="btn btn-outline">Partner with us</a>
+        </div>
+        <div class="mc-badges reveal">
+          <span class="mc-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.22.14-2.2 1.28-2.18 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.85M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            Apple Wallet
+          </span>
+          <span class="mc-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="13" rx="2.5"/><path d="M2 10h20"/></svg>
+            Google Wallet
+          </span>
+          <span class="mc-soon"><span class="mc-dot" aria-hidden="true"></span>Coming summer 2026</span>
+        </div>
+      </div>
+
+      <div class="reveal"><WalletPhone /></div>
+    </div>
+  </header>
+
+  <!-- HOW IT WORKS -->
+  <section class="section light" id="how-it-works">
+    <div class="wrap">
+      <div class="hd-c reveal">
+        <span class="eyebrow" style="justify-content:center;">How it works</span>
+        <h2 class="serif">Three moments. <em>Seamless.</em></h2>
+        <p class="sub">From welcome email to the front door — the whole experience runs on a single card on your phone.</p>
+      </div>
+      <div class="steps">
+        {steps.map((s) => (
+          <div class="step reveal">
+            <span class="step-n">{s.n}</span>
+            <h3 class="serif">{s.t}</h3>
+            <p>{s.b}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- TIERS -->
+  <section class="section warm" id="tiers">
+    <div class="wrap">
+      <div class="hd-l reveal">
+        <span class="eyebrow">Membership</span>
+        <h2 class="serif">Three levels. <em>One card.</em></h2>
+        <p class="sub">Every member carries a card that matches their plan. Your level is right there — unlocking the right access at The Common and with partners across town.</p>
+      </div>
+      <div class="tiers">
+        {tiers.map((t) => (
+          <article class={`tc reveal${t.feat ? ' feat' : ''}`}>
+            <div class={`tc-hdr ${t.variant}`}>
+              <div class="tc-top">
+                <div><span class="tc-lbl">{t.lbl}</span><div class="tc-name serif">{t.name}</div></div>
+                <span class="tc-badge">{t.badge}</span>
+              </div>
+            </div>
+            <div class="tc-body">
+              <p class="tc-plans">{t.plans}</p>
+              <ul class="tc-perks">
+                {t.perks.map((p) => (
+                  <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>{p}</li>
+                ))}
+              </ul>
+              {t.nudge && <p class="tc-nudge">Partner perks are a member benefit. <a href={OFFICERND} target="_blank" rel="noopener noreferrer">Become a member →</a></p>}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- PERK CATEGORIES -->
+  <section class="section light" id="perks">
+    <div class="wrap">
+      <div class="hd-c reveal">
+        <span class="eyebrow" style="justify-content:center;">Member perks</span>
+        <h2 class="serif">Squamish, on the back of the card.</h2>
+        <p class="sub">We're building a network of local perks across the categories our members care about most. Every new partner pushes to all members the day it goes live.</p>
+      </div>
+      <div class="pcats">
+        {perks.map((p) => (
+          <div class="pcard reveal">
+            <span class="pcard-i" aria-hidden="true" set:html={perkIcon(p.icon)} />
+            <h3 class="serif">{p.n}</h3>
+            <p>{p.d}</p>
+          </div>
+        ))}
+      </div>
+      <p class="perk-note reveal"><span class="live-d" aria-hidden="true"></span>Partners joining now — new perks push to every member as they go live.</p>
+    </div>
+  </section>
+
+  <!-- FOR LOCAL BUSINESSES -->
+  <section class="section dark" id="partners">
+    <div class="mesh" aria-hidden="true"></div>
+    <div class="wrap" style="position:relative;z-index:2;">
+      <div class="hd-l on-dark reveal">
+        <span class="eyebrow on-dark">For local businesses</span>
+        <h2 class="serif" style="color:#fff;">Let's build Squamish, <em>together.</em></h2>
+        <p class="sub" style="color:rgba(255,255,255,0.66);">The Common is becoming Squamish's everyday community hub — where locals work, gather, and build. Our members are loyal, local-first, and high-intent. Partner with us and your business becomes part of their daily routine.</p>
+      </div>
+      <div class="mechs">
+        {mechanics.map((m) => (
+          <div class="mech reveal">
+            <h3 class="serif">{m.t}</h3>
+            <p>{m.b}</p>
+          </div>
+        ))}
+      </div>
+      <div class="reveal" style="text-align:center;margin-top:2.8rem;">
+        <a href={PARTNER_MAIL} class="btn btn-gold">Become a partner →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section light" id="join">
+    <div class="wrap" style="text-align:center;max-width:680px;">
+      <h2 class="serif reveal" style="font-size:clamp(2rem,4.5vw,3rem);line-height:1.08;margin-bottom:1.1rem;">Join the <em style="font-style:italic;color:var(--gold);">community.</em></h2>
+      <p class="reveal" style="color:var(--stone);font-weight:300;font-size:1.1rem;margin:0 auto 1.9rem;max-width:520px;">Become a member and carry Squamish in your pocket. Run a local business? Let's get your perk on every member's card.</p>
+      <div class="reveal" style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+        <a href={OFFICERND} class="btn btn-gold" target="_blank" rel="noopener noreferrer">Become a member</a>
+        <a href={PARTNER_MAIL} class="btn btn-outline">Partner with us</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ── HERO ── */
+  .mc-hero { position: relative; overflow: hidden; padding: 130px 0 70px; background: var(--paper); }
+  .mc-glow { position: absolute; inset: 0; pointer-events: none; background:
+    radial-gradient(ellipse 50% 55% at 82% 42%, rgba(212,168,44,0.12), transparent 70%),
+    radial-gradient(ellipse 36% 46% at 94% 10%, rgba(232,194,102,0.09), transparent 65%); }
+  .mc-hero-g { display: grid; grid-template-columns: 56fr 44fr; gap: 4.5rem; align-items: center; position: relative; z-index: 1; }
+  .mc-hero-copy h1 { font-size: clamp(2.7rem, 6vw, 5rem); line-height: 1.04; letter-spacing: -0.015em; margin: 1.3rem 0; }
+  .mc-hero-copy h1 em { font-style: italic; color: var(--stone); }
+  .mc-hero-copy .lede { font-size: 1.15rem; font-weight: 300; line-height: 1.7; color: var(--stone); max-width: 470px; margin-bottom: 2rem; }
+  .mc-btns { display: flex; flex-wrap: wrap; gap: 0.9rem; margin-bottom: 2.2rem; }
+  .mc-badges { display: flex; flex-wrap: wrap; gap: 0.7rem; align-items: center; }
+  .mc-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--white); border: 1px solid var(--line); border-radius: 100px; padding: 0.5rem 0.95rem; font-size: 0.82rem; color: var(--stone); }
+  .mc-soon { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stone-soft); }
+  .mc-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); animation: mcpulse 2.4s infinite; }
+  @keyframes mcpulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.7); } }
+  @media (max-width: 900px) { .mc-hero-g { grid-template-columns: 1fr; gap: 3rem; } .mc-hero-g > .reveal:last-child { order: -1; } }
+
+  /* ── SHARED SECTION HEADS ── */
+  .hd-c { text-align: center; max-width: 620px; margin: 0 auto 3.2rem; }
+  .hd-l { max-width: 640px; margin-bottom: 3.2rem; }
+  .hd-c h2, .hd-l h2 { font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; letter-spacing: -0.015em; margin: 1rem 0 0.9rem; }
+  .hd-c h2 em, .hd-l h2 em { font-style: italic; color: var(--stone); }
+  .hd-c .sub, .hd-l .sub { font-size: 1.1rem; font-weight: 300; line-height: 1.7; color: var(--stone); }
+  .hd-c .sub { margin: 0 auto; }
+
+  /* ── HOW IT WORKS ── */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.4rem; }
+  @media (max-width: 820px) { .steps { grid-template-columns: 1fr; gap: 2rem; } }
+  .step-n { display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: var(--ink-deep); color: #fff; font-family: var(--serif); font-size: 1.3rem; margin-bottom: 1.2rem; }
+  .step h3 { font-size: 1.35rem; margin-bottom: 0.5rem; }
+  .step p { font-size: 0.98rem; font-weight: 300; line-height: 1.65; color: var(--stone); }
+
+  /* ── TIERS ── */
+  .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
+  @media (max-width: 980px) { .tiers { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 680px) { .tiers { grid-template-columns: 1fr; } }
+  .tc { background: var(--white); border: 1px solid var(--line); border-radius: 24px; overflow: hidden; transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease); }
+  .tc:hover { transform: translateY(-5px); box-shadow: 0 22px 48px -26px rgba(28,25,23,0.4); }
+  .tc.feat { border-color: transparent; box-shadow: 0 0 0 1.5px var(--gold), 0 10px 30px -20px rgba(28,25,23,0.3); }
+  .tc-hdr { padding: 1.7rem 1.7rem 1.5rem; position: relative; overflow: hidden; }
+  .tc-hdr.vis { background: linear-gradient(135deg,#fcfcfb,#d6d3d1 28%,#f5f5f4 47%,#a8a29e 72%,#e7e5e4); }
+  .tc-hdr.mem, .tc-hdr.res { background: linear-gradient(150deg,#1C1917,#0C0A09); }
+  .tc-hdr.res::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 80% at 100% 0%, rgba(212,168,44,0.3), transparent 60%); pointer-events: none; }
+  .tc-top { display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 1; }
+  .tc-lbl { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; display: block; margin-bottom: 0.4rem; }
+  .tc-name { font-size: 1.7rem; line-height: 1; }
+  .tc-hdr.vis .tc-lbl { color: var(--stone-soft); } .tc-hdr.vis .tc-name { color: var(--ink); }
+  .tc-hdr.mem .tc-lbl, .tc-hdr.res .tc-lbl { color: rgba(255,255,255,0.5); }
+  .tc-hdr.mem .tc-name, .tc-hdr.res .tc-name { color: #fff; }
+  .tc-badge { font-size: 0.58rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; border-radius: 100px; padding: 0.28rem 0.7rem; position: relative; z-index: 1; }
+  .tc-hdr.vis .tc-badge { background: rgba(28,25,23,0.08); border: 1px solid rgba(28,25,23,0.12); color: var(--stone); }
+  .tc-hdr.mem .tc-badge { background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.22); color: #fff; }
+  .tc-hdr.res .tc-badge { background: rgba(212,168,44,0.2); border: 1px solid rgba(212,168,44,0.45); color: var(--gold-honey); }
+  .tc-body { padding: 1.5rem 1.7rem 1.7rem; }
+  .tc-plans { font-size: 0.82rem; color: var(--stone); margin-bottom: 1.1rem; padding-bottom: 1.1rem; border-bottom: 1px solid var(--line); }
+  .tc-perks { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+  .tc-perks li { display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.88rem; font-weight: 300; color: var(--stone); line-height: 1.45; }
+  .tc-perks svg { flex-shrink: 0; margin-top: 2px; color: var(--accent); }
+  .tc.feat .tc-perks svg, .tc-hdr.res ~ .tc-body .tc-perks svg { color: var(--gold); }
+  .tc-nudge { margin-top: 1.1rem; padding-top: 1rem; border-top: 1px solid var(--line); font-size: 0.8rem; font-weight: 300; color: var(--stone-soft); line-height: 1.5; }
+  .tc-nudge a { color: var(--ink); font-weight: 500; border-bottom: 1px solid var(--gold); white-space: nowrap; }
+  .tc-nudge a:hover { color: var(--gold); }
+
+  /* ── PERK CATEGORIES ── */
+  .pcats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; }
+  @media (max-width: 900px) { .pcats { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .pcats { grid-template-columns: 1fr; } }
+  .pcard { background: var(--white); border: 1px solid var(--line); border-radius: 18px; padding: 1.7rem 1.5rem; transition: transform 0.3s var(--ease), border-color 0.3s; }
+  .pcard:hover { transform: translateY(-3px); border-color: var(--stone); }
+  .pcard-i { display: inline-flex; width: 44px; height: 44px; border-radius: 12px; background: var(--paper-warm); align-items: center; justify-content: center; margin-bottom: 1rem; color: var(--stone); }
+  .pcard h3 { font-size: 1.15rem; margin-bottom: 0.4rem; }
+  .pcard p { font-size: 0.9rem; font-weight: 300; line-height: 1.55; color: var(--stone); }
+  .perk-note { display: flex; align-items: center; justify-content: center; gap: 0.6rem; margin-top: 2.4rem; font-size: 0.88rem; font-weight: 300; color: var(--stone-soft); }
+  .live-d { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); animation: mcpulse 2.4s infinite; }
+
+  /* ── PARTNER MECHANICS (dark) ── */
+  .hd-l.on-dark .eyebrow { color: var(--gold-glow); }
+  .mechs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+  @media (max-width: 820px) { .mechs { grid-template-columns: 1fr; } }
+  .mech { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 1.8rem; }
+  .mech h3 { font-size: 1.25rem; color: #fff; margin-bottom: 0.5rem; }
+  .mech p { font-size: 0.92rem; font-weight: 300; line-height: 1.65; color: rgba(255,255,255,0.62); }
+</style>

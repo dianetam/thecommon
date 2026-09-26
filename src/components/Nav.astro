@@ -1,0 +1,24 @@
+---
+const { current = '' } = Astro.props;
+const links = [
+  { href: '/',            label: 'Home',       key: 'home' },
+  { href: '/membership/', label: 'Membership', key: 'membership' },
+  { href: '/spaces/',     label: 'Spaces',     key: 'spaces' },
+  { href: '/about/',      label: 'About',      key: 'about' },
+  { href: '/contact/',    label: 'Contact',    key: 'contact' },
+];
+const OFFICERND = 'https://e-commerce.officernd.com/thecommon/search-results?type=hotdesk&listingType=plan';
+---
+<nav class="nav" aria-label="Primary">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo" aria-label="The Common home">
+      <img src="/img/logo-white.png" alt="The Common Squamish" />
+    </a>
+    <ul class="nav-menu">
+      {links.map((l) => (
+        <li><a href={l.href} aria-current={current === l.key ? 'page' : undefined}>{l.label}</a></li>
+      ))}
+    </ul>
+    <a class="nav-cta" href={OFFICERND} target="_blank" rel="noopener noreferrer">Become a Member</a>
+  </div>
+</nav>

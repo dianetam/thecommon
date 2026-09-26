@@ -1,0 +1,50 @@
+name: Deploy preview to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      # GitHub Pages serves this repo at /thecommon/, but the site is written for a root domain.
+      # Prefix every root-relative link and asset so the preview works. Not needed for the real deploy.
+      - name: Prefix root paths for the /thecommon/ preview URL
+        run: |
+          find dist -type f \( -name '*.html' -o -name '*.css' -o -name '*.xml' \) -print0 \
+            | xargs -0 sed -i \
+              -e 's#\(href\|src\|content\)="/\([^/]\)#\1="/thecommon/\2#g' \
+              -e 's#\(href\|src\)="/"#\1="/thecommon/"#g' \
+              -e 's#url(/\([^/]\)#url(/thecommon/\1#g' \
+              -e "s#url('/\([^/]\)#url('/thecommon/\1#g"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

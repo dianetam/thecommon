@@ -1,0 +1,65 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+const NEWSLETTER = 'http://eepurl.com/cUCVlj';
+const posts = (await getCollection('posts'))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const fmt = (d) => d.toLocaleDateString('en-CA', { month: 'long', day: 'numeric', year: 'numeric' });
+---
+<Base current="journal" title="Journal — The Common Squamish" description="News, recaps, member stories, and practical guides from The Common — Squamish's community and innovation hub.">
+  <header class="page-hd">
+    <div class="mesh" aria-hidden="true"></div>
+    <div class="wrap">
+      <span class="eyebrow on-dark">Journal</span>
+      <h1>Notes from <em class="shimmer">The Common</em>.</h1>
+      <p>News, recaps, member stories, and the occasional practical guide. The stuff worth sharing from Squamish's community hub.</p>
+    </div>
+  </header>
+
+  <section class="section light">
+    <div class="wrap">
+      {posts.length === 0 && <p>First post coming soon.</p>}
+      <div class="posts">
+        {posts.map((p, i) => (
+          <a class={`post-card reveal${i === 0 ? ' feat' : ''}`} href={`/journal/${p.id}/`}>
+            {p.data.image && <img src={p.data.image} alt="" loading="lazy" />}
+            <div class="post-body">
+              <span class="post-date">{fmt(p.data.date)}{p.data.tags[0] ? ` · ${p.data.tags[0]}` : ''}</span>
+              <h2>{p.data.title}</h2>
+              <p>{p.data.summary}</p>
+              <span class="post-cta">Read →</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section dark">
+    <div class="mesh" aria-hidden="true"></div>
+    <div class="wrap" style="position:relative;z-index:2;max-width:660px;text-align:center;">
+      <span class="eyebrow on-dark" style="justify-content:center;">Stay in the loop</span>
+      <h2 style="font-size:clamp(2rem,4.5vw,3rem);color:#fff;margin:1.1rem 0;">Get it in your <em class="shimmer">inbox</em>.</h2>
+      <p style="color:rgba(255,255,255,0.74);font-weight:300;margin:0 auto 2rem;max-width:460px;">A short note each week — what's on, who's building what, and the occasional good idea.</p>
+      <a href={NEWSLETTER} class="btn btn-gold" target="_blank" rel="noopener noreferrer">Join the newsletter</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .posts { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem; }
+  .post-card { display: flex; flex-direction: column; background: var(--white); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease); }
+  .post-card:hover { transform: translateY(-5px); box-shadow: 0 20px 44px -26px rgba(28,25,23,0.45); }
+  .post-card.feat { grid-column: 1 / -1; flex-direction: row; }
+  .post-card img { width: 100%; height: 220px; object-fit: cover; }
+  .post-card.feat img { width: 50%; height: auto; min-height: 280px; }
+  .post-body { padding: 1.8rem; display: flex; flex-direction: column; flex: 1; }
+  .post-date { font-size: 0.74rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--stone-soft); margin-bottom: 0.6rem; }
+  .post-card h2 { font-family: var(--serif); font-size: 1.5rem; line-height: 1.18; margin-bottom: 0.6rem; }
+  .post-card.feat h2 { font-size: 2rem; }
+  .post-body p { color: var(--stone); font-weight: 300; font-size: 0.95rem; flex: 1; margin-bottom: 1rem; }
+  .post-cta { font-size: 0.78rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+  .post-card:hover .post-cta { color: var(--gold); }
+  @media (max-width: 720px) { .posts { grid-template-columns: 1fr; } .post-card.feat { flex-direction: column; } .post-card.feat img { width: 100%; } }
+</style>
