@@ -1,6 +1,6 @@
 # The Common — website (Astro)
 
-Fresh static rebuild of thecommon.io. Code-native (vibe-coded with Claude), edits → static HTML on a CDN. Secure + fast by construction. Booking stays on OfficeRnD; member card via PassKit (Phase 2).
+Fresh static rebuild of thecommon.io. Code-native (vibe-coded with Claude), edits → static HTML on a CDN.
 
 ## Run it locally
 ```bash
